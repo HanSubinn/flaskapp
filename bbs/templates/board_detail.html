@@ -1,0 +1,65 @@
+{% extends "layout.html" %}
+{% block title %}{{ post.title }} - 게시판{% endblock %}
+
+{% block content %}
+<div style="max-width: 700px; margin: 40px auto;">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0" style="color: #5a533f;">{{ post.title }}</h2>
+    
+    <div class="d-flex align-items-center" style="gap: 8px;">
+      <!-- 수정하기 버튼 -->
+      <a href="/board/{{ post.id }}/edit"
+         class="btn btn-sm"
+         style="background-color: #a38f6f; color: white; border-radius: 20px; padding: 6px 20px; line-height: 1.2;">
+        수정하기
+      </a>
+  
+      <!-- 좋아요 버튼 -->
+      <form action="{{ url_for('like_post', post_id=post.id) }}" method="post" style="margin: 0;">
+        {% set liked = false %}
+        {% for like in post.likes if like.user.username == session.get('user') %}
+          {% set liked = true %}
+        {% endfor %}
+        <button type="submit"
+                class="btn btn-like {% if liked %}liked{% else %}not-liked{% endif %}">
+          ❤️ {{ post.likes|length }}
+        </button>
+
+      </form>
+    </div>
+  </div>
+    
+
+  <div class="mb-5 p-4" style="white-space: pre-wrap; font-size: 1.1rem; color: #4a463f; line-height: 1.5; background-color: #faf9f6; border-radius: 12px; border: 1.5px solid #c4b89e;">
+    {{ post.content }}
+  </div>
+
+  <hr style="margin-top: 100px;">
+  <h4>댓글</h4>
+  <div>
+    {% for comment in post.comments %}
+    <div class="mb-3 p-3" style="background-color: #f4f1e7; border-radius: 8px;">
+      <p style="margin-bottom: 4px;"><strong>{{ comment.user.username }}</strong> <small style="color: gray;">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</small></p>
+      <p style="white-space: pre-wrap;">{{ comment.content }}</p>
+    </div>
+    {% else %}
+    <p>댓글이 없습니다.</p>
+    {% endfor %}
+  </div>
+
+  {% if session.get('user') %}
+  <hr>
+  <h5>댓글 작성하기</h5>
+  <form action="{{ url_for('add_comment', post_id=post.id) }}" method="post">
+    <div class="mb-3">
+      <textarea name="content" class="form-control" rows="3" placeholder="댓글을 입력하세요." required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">댓글 등록</button>
+  </form>
+  {% else %}
+  <p><a href="{{ url_for('login') }}">로그인</a> 후 댓글 작성이 가능합니다.</p>
+  {% endif %}
+
+  <a href="/board" class="btn btn-secondary mt-4" style="width: 100px;">목록으로</a>
+</div>
+{% endblock %}

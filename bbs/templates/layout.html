@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}Board App{% endblock %}</title>
+  
+  <!-- 부트스트랩 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  
+  <!-- 구글 폰트 -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
+  
+  <style>
+    /* 전체 바디 스타일 */
+    body {
+      background-color: #faf9f6;
+      font-family: 'Noto Sans KR', 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #3a3a3a;
+      font-weight: 500;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 내비게이션 바 */
+    .navbar {
+      background-color: #f3f2ef;
+      box-shadow: 0 2px 4px rgb(0 0 0 / 0.05);
+      border-radius: 0 0 15px 15px;
+      font-weight: 700;
+      font-size: 1.3rem;
+      letter-spacing: 0.05em;
+      padding: 0.7rem 1.5rem;
+    }
+    .navbar-brand {
+      color: #5a4d3e;
+      font-weight: 700;
+      font-family: 'Poppins', sans-serif;
+    }
+    .navbar-brand:hover {
+      color: #8b7e66;
+      text-decoration: none;
+    }
+
+    /* 컨테이너 기본 */
+    .container {
+      flex: 1;
+      margin-top: 60px;
+      margin-bottom: 60px;
+    }
+
+    /* 폼 컨테이너 - 중앙 정렬 + 너비 제한 */
+    .form-wrapper {
+      max-width: 420px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 30px 35px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgb(0 0 0 / 0.1);
+    }
+
+    /* 제목 스타일 */
+    h2 {
+      font-weight: 700;
+      margin-bottom: 25px;
+      color: #4a463f;
+      text-align: center;
+      letter-spacing: 0.03em;
+    }
+
+    /* 입력폼 스타일 */
+    input.form-control,
+    textarea.form-control {
+      border-radius: 12px;
+      border: 1.5px solid #c4b89e;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: border-color 0.3s ease;
+    }
+    input.form-control:focus,
+    textarea.form-control:focus {
+      outline: none;
+      border-color: #a18659;
+      box-shadow: 0 0 8px rgba(161, 134, 89, 0.35);
+    }
+
+    /* 버튼 통일 스타일 */
+    .btn {
+        border-radius: 50px !important;
+        font-weight: 700 !important;
+        padding: 12px 0 !important;
+        width: 100% !important; /* 기본은 100% */
+        letter-spacing: 0.05em !important;
+        font-size: 1rem !important;
+        transition: background-color 0.3s ease !important;
+        white-space: nowrap; /* 글쓰기 버튼 줄넘김 방지 */
+    }
+
+    /* width: auto인 작은 버튼들은 기본 너비 설정 무시 */
+    .btn:not(.w-100) {
+      width: auto !important;
+      padding: 6px 14px !important;
+    }
+
+    .btn-like {
+      padding: 6px 14px;
+      font-size: 0.85rem;
+      border-radius: 30px;
+      line-height: 1;
+      white-space: nowrap;
+      width: auto;
+      transition: all 0.3s ease;
+    }
+
+    .btn-like.liked {
+      background-color: #fff0f0;
+      color: #c66;
+      border: 1px solid #c66;
+    }
+
+    .btn-like.not-liked {
+      background-color: #f9f9f9;
+      color: #888;
+      border: 1px solid #ccc;
+    }
+
+
+
+    /* 인덱스 페이지 버튼들을 담을 래퍼 */
+    .index-btn-group {
+        max-width: 420px;
+        margin: 40px auto;
+        display: flex;
+        gap: 20px;
+    }
+
+    /* 인덱스 페이지 버튼 각각 - flex 자식 너비 동일 */
+    .index-btn-group .btn {
+        flex: 1;            /* 같은 비율 너비 */
+        width: auto !important; /* 100% 기본 너비 해제 */
+        border-radius: 50px !important;
+        font-weight: 700 !important;
+        padding: 12px 0 !important;
+        letter-spacing: 0.05em !important;
+        font-size: 1rem !important;
+        text-align: center;
+        transition: background-color 0.3s ease !important;
+    }
+
+    /* 주 버튼 (로그인, 회원가입, 새 글 작성 등) */
+    .btn-primary {
+        background-color: #a18659 !important;
+        border: none !important;
+        color: #fff !important;
+        border-radius: 50px !important;
+        font-weight: 700 !important;
+        padding: 12px 0 !important;
+        letter-spacing: 0.05em !important;
+        font-size: 1rem !important;
+        text-align: center;
+        transition: background-color 0.3s ease !important;
+        width: 120px !important; /* 글쓰기 버튼 너비 고정 */
+    }
+
+    .btn-primary:hover {
+        background-color: #7c6a3d !important;
+        color: #fff !important;
+    }
+
+    /* 필요 시 보조 버튼 스타일도 맞추기 */
+    .btn-secondary {
+        background-color: #c5b993 !important;
+        border: none !important;
+        color: #3a3a3a !important;
+    }
+
+    .btn-secondary:hover {
+        background-color: #a89f7b !important;
+        color: #3a3a3a !important;
+    }
+
+    /* 회원가입 버튼 로그인 페이지 아래 정렬 */
+    .register-link {
+      margin-top: 18px;
+      text-align: center;
+      font-weight: 600;
+    }
+    .register-link a {
+      color: #a18659;
+      text-decoration: none;
+    }
+    .register-link a:hover {
+      text-decoration: underline;
+      color: #7c6a3d;
+    }
+
+    /* 게시판 표 스타일 */
+    table.table {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 5px 12px rgb(0 0 0 / 0.08);
+    }
+    table.table th,
+    table.table td {
+      vertical-align: middle;
+      font-weight: 600;
+      color: #5a533f;
+    }
+    table.table tbody tr:hover {
+      background-color: #f3f2ef;
+      cursor: pointer;
+    }
+    table.table a {
+      color: #7c6a3d;
+      text-decoration: none;
+      font-weight: 700;
+    }
+    table.table a:hover {
+      text-decoration: underline;
+    }
+
+    /* 기타 텍스트 중앙 정렬 */
+    .text-center {
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">MyBoard</a>
+    </div>
+  </nav>
+  <div class="container">
+    {% block content %}{% endblock %}
+  </div>
+</body>
+</html>
