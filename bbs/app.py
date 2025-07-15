@@ -57,6 +57,8 @@ posts = [
     {"id": 1, "title": "첫 번째 글", "author": "admin", "created_at": "2025-07-15"}
 ]
 
+# ---------------- 로그인 ---------------- #
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -71,6 +73,7 @@ def login():
             return "로그인 실패", 401
     return render_template("login.html")
 
+# ---------------- 회원가입 ---------------- #
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -91,16 +94,20 @@ def register():
     return render_template("register.html")
 
 
+# ---------------- 로그아웃 ---------------- #
+
 @app.route("/logout")
 def logout():
     session.pop("user", None)
     return redirect(url_for("index"))
 
+# ---------------- 게시판 ---------------- #
 @app.route("/board")
 def board():
     posts = Post.query.order_by(Post.created_at.desc()).all()
     return render_template("board.html", posts=posts)
 
+# ---------------- 새 글 쓰기 ---------------- #
 @app.route("/create", methods=["GET", "POST"])
 def create():
     if request.method == "POST":
@@ -122,6 +129,8 @@ def create():
     return render_template("create_post.html")
 
 
+# ---------------- 글 자세히 보기 ---------------- #
+
 @app.route("/board/<int:post_id>")
 def board_detail(post_id):
     post = Post.query.get(post_id)
@@ -129,7 +138,7 @@ def board_detail(post_id):
         return "글을 찾을 수 없습니다.", 404
     return render_template("board_detail.html", post=post)
 
-
+# ---------------- 글 수정 ---------------- #
 @app.route("/board/<int:post_id>/edit", methods=["GET", "POST"])
 def edit_post(post_id):
     post = Post.query.get(post_id)
@@ -144,7 +153,7 @@ def edit_post(post_id):
 
     return render_template("board_edit.html", post=post)
 
-
+# ---------------- 댓글 달기 ---------------- #
 @app.route("/board/<int:post_id>/comment", methods=["POST"])
 def add_comment(post_id):
     if "user" not in session:
@@ -171,7 +180,7 @@ def add_comment(post_id):
 
     return redirect(url_for("board_detail", post_id=post_id))
 
-
+# ---------------- 좋아요 기능 ---------------- #
 @app.route("/board/<int:post_id>/like", methods=["POST"])
 def like_post(post_id):
     if "user" not in session:
